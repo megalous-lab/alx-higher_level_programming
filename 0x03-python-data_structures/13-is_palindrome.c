@@ -1,102 +1,86 @@
 #include "lists.h"
 
 /**
- * is_palindrome - checks if a linked list is a palindrome
- * @head: pointer to the head of the linkedlist
+ * is_palindrome - chexk if a list is palindrome
+ * Description:
+ * The approach uses the fact that a list
+ * - is palindrom if:
+ *   its first half is thesame as the reverse
+ *   of its last half
+ * - else its not a palindrom
+ * The middle element is found using the
+ * tortoise hare algorithm
+ * In the case where the list has odd length
+ * the middle element is disregarded
  *
- * Return: 1 if is palindrom, 0 otherwise
-#include "lists.h"
-
-/**
- * is_palindrome - checks if a linked list is a palindrome
- * @head: pointer to the head of the linkedlist
- *
- * Return: 1 if is palindrom, 0 otherwise
+ * @list: pointer to list
+ * Return: 1 if true 0 otherwise
  */
-int is_palindrome(listint_t **head)
-{
-	listint_t *slowP = *head;
-	listint_t *fastP = *head;
-	listint_t *slowP_prev = *head;
-	listint_t *secondHalf, *mid_node = NULL;
-	int retval = 0;
 
-	if (!head)
+int is_palindrome(listint_t **list)
+{
+	int result = 1;
+	listint_t *fast, *slow, *h1, *h2, *tmp;
+
+	if (!list)
 		return (0);
-	if (!(*head) || !((*head)->next))
+
+	/* if list length is less than 2 */
+	if (!(*list) || !((*list)->next))
 		return (1);
-	if (*head && (*head)->next)
+
+	/* find the middle node */
+	slow = fast = *list;
+	while (fast && fast->next)
 	{
-		while(fastP && fastP->next)
-		{
-			slowP_prev = slowP;
-			slowP = slowP->next;
-			fastP = fastP->next->next;
-		}
-		if (fastP)
-		{
-			mid_node = slowP;
-			slowP = slowP->next;
-		}
-		secondHalf = slowP;
-		slowP_prev->next = NULL;
-
-		reverse(&secondHalf);
-
-		retval = compareLists(*head, secondHalf);
-
-		reverse(&secondHalf);
-		if (mid_node)
-		{
-			slowP_prev->next = mid_node;
-			mid_node->next = secondHalf;
-		}
-		else
-			slowP_prev->next = secondHalf;
+		slow = slow->next;
+		fast = fast->next->next;
 	}
-	return (retval);
+	if (fast)
+		slow = slow->next;
+
+	/* reverse the last half */
+	h2 = reverse_listint(&slow);
+	tmp = h2;
+
+	/* compare the two halves */
+	h1 = *list;
+	while (h2)
+	{
+		if (h2->n != h1->n)
+		{
+			result = 0;
+			break;
+		}
+		h1 = h1->next;
+		h2 = h2->next;
+	}
+
+	/* rever the half back to original */
+	reverse_listint(&tmp);
+	return (result);
 }
 
 /**
- * compareLists - compare two lists
- * @h1: pointer to the first list
- * @h2: pointer to the second list
+ * reverse_listint - reverses a linked list
+ * @h: head of the list
  *
- * Return: 1 if both lists are the same 0 otherwise
+ * Return: pointer to the reversed
  */
-int compareLists(listint_t *h1, listint_t *h2)
+listint_t *reverse_listint(listint_t **h)
 {
-	while (h1 && h2)
-	{
-		if (h1->n == h2->n)
-		{
-			h1 = h1->next;
-			h2 = h2->next;
-		}
-		else
-			return (0);
-	}
-	if (!h1 && !h2)
-		return (1);
-	return (0);
-}
+	listint_t *tmp2, *tmp1;
 
-/**
- * reverse - reverse a linkedlist
- * @head: pointer to the head of the list
- */
-void reverse(listint_t **head)
-{
-	listint_t *next = *head;
-	listint_t *current = *head;
-	listint_t *prev = NULL;
-
-	while (current)
+	if (!h || !(*h))
+		return (NULL);
+	tmp1 = (*h)->next;
+	(*h)->next = NULL;
+	while (tmp1)
 	{
-		next = current->next;
-		current->next = prev;
-		prev = current;
-		current = next;
+		tmp2 = *h;
+		*h = tmp1;
+		tmp1 = (*h)->next;
+		(*h)->next = tmp2;
 	}
-	*head = prev; 
+	return (*h);
 }
