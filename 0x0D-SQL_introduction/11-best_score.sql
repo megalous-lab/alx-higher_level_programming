@@ -1,5 +1,5 @@
 -- Best score
 SELECT score, name
-	WHERE score >= 10
 FROM second_table
+WHERE score >= 10
 ORDER BY score DESC;
