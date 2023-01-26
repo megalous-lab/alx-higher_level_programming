@@ -1,3 +1,3 @@
 -- Full table from a database
-SELECT TABLE `first_table` FROM htbn_0c_0;
+SELECT `first_table` FROM htbn_0c_0;
 
